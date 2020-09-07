@@ -1,5 +1,6 @@
-from setuptools import setup, find_packages
 import pathlib
+
+from setuptools import find_packages, setup
 
 here = pathlib.Path(__file__).parent.resolve()
 
@@ -31,7 +32,7 @@ setup(
     python_requires=">=3.6, <4",
     install_requires=[],
     extras_require={
-        "dev": ["black"],
+        "dev": ["black", "nox", "isort", "mypy"],
         "test": ["pytest"],
     },
     project_urls={
