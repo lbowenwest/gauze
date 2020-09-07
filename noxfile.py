@@ -2,9 +2,9 @@ import nox
 from nox.sessions import Session
 
 python = ["3.6", "3.7", "3.8"]
-locations = "src", "tests", "noxfile.py", "setup.py"
+locations = "src", "tests"
 
-nox.options.sessions = ["tests", "lint"]
+nox.options.sessions = ["tests", "lint", "mypy"]
 
 
 @nox.session(python="3.8")
@@ -29,7 +29,6 @@ def lint(session: Session) -> None:
     args = session.posargs or locations
     session.install(
         "flake8",
-        "flake8-annotations",
         "flake8-black",
         "flake8-bugbear",
         "flake8-isort",
@@ -41,7 +40,7 @@ def lint(session: Session) -> None:
 def mypy(session: Session) -> None:
     """Run static type analysis with mypy"""
     args = session.posargs or locations
-    session.install("-r", "requirements.txt")
+    session.install("-e", ".")
     session.install("mypy")
     session.run("mypy", *args)
 
