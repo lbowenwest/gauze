@@ -1,3 +1,3 @@
-# Collective
+# Gauze
 
-A library for creating filter objects
+A library for filtering and collecting objects.

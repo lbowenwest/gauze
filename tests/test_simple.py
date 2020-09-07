@@ -1,4 +1,4 @@
-from collective.simple import add_one
+from gauze.simple import add_one
 
 
 def test_add_one() -> None:

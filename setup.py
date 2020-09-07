@@ -9,12 +9,12 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 
 setup(
-    name="pycollective",
+    name="gauze",
     version="0.1.0",
-    description="A sample Python project",
+    description="Small library for filtering and collecting objects",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/lbowenwest/pycollective",
+    url="https://github.com/lbowenwest/gauze",
     author="Lygon Bowen-West",
     classifiers=[
         "Development Status :: 3 - Alpha",
@@ -36,7 +36,7 @@ setup(
         "test": ["pytest"],
     },
     project_urls={
-        "Bug Reports": "https://github.com/lbowenwest/pycollective/issues",
-        "Source": "https://github.com/lbowenwest/pycollective/",
+        "Bug Reports": "https://github.com/lbowenwest/gauze/issues",
+        "Source": "https://github.com/lbowenwest/gauze/",
     },
 )
