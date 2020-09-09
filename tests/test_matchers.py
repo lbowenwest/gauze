@@ -3,17 +3,17 @@ from hypothesis import strategies as st
 
 from gauze.matchers import (
     Matcher,
-    anything,
     all_of,
     any_of,
+    anything,
+    contains,
     equal_to,
-    not_,
     greater_than,
     greater_than_or_equal_to,
     less_than,
     less_than_or_equal_to,
+    not_,
     starts_with,
-    contains,
 )
 
 

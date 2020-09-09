@@ -1,5 +1,4 @@
 from .base import Matcher
-from .core import all_of, any_of, anything, equal_to, not_
 from .comparison import (
     greater_than,
     greater_than_or_equal_to,
@@ -7,6 +6,7 @@ from .comparison import (
     less_than_or_equal_to,
     starts_with,
 )
+from .core import all_of, any_of, anything, equal_to, not_
 from .sequence import contains
 
 __all__ = [

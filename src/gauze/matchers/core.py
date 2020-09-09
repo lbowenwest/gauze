@@ -1,6 +1,6 @@
 from typing import Any
 
-from .base import Matcher, Matchable
+from .base import Matchable, Matcher
 
 
 class EqualMatcher(Matcher):
