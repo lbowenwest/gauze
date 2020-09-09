@@ -40,7 +40,7 @@ def lint(session: Session) -> None:
 def mypy(session: Session) -> None:
     """Run static type analysis with mypy"""
     args = session.posargs or locations
-    session.install("-e", ".")
+    session.install("-e", ".[dev,test]")
     session.install("mypy")
     session.run("mypy", *args)
 
