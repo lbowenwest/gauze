@@ -47,6 +47,7 @@ def mypy(session: Session) -> None:
 
 @nox.session(python=python)
 def tests(session: Session) -> None:
-    session.install("-e", ".", "pytest")
+    """Run the tests"""
+    session.install("-e", ".[test]")
     tests = session.posargs or ["tests"]
     session.run("pytest", *tests)

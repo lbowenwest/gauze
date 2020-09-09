@@ -1,17 +1,16 @@
-from typing import Any
+from typing import Any, Callable, Union
 
 from typing_extensions import Protocol, runtime_checkable
 
 
 @runtime_checkable
 class Matcher(Protocol):
-    """
-    Matcher is anything that is callable with one argument and returns a bool
-    """
+    def match(self, actual: Any) -> bool:
+        ...  # pragma: no cover
 
     def __call__(self, actual: Any) -> bool:
-        ...
+        return self.match(actual)
 
 
-def is_matcher(value: Any) -> bool:
-    return isinstance(value, Matcher)
+MatcherFunc = Callable[[Any], bool]
+Matchable = Union[Matcher, MatcherFunc]

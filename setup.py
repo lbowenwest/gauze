@@ -34,7 +34,7 @@ setup(
     install_requires=["typing_extensions"],
     extras_require={
         "dev": ["black", "nox", "isort", "mypy"],
-        "test": ["pytest"],
+        "test": ["pytest", "hypothesis"],
     },
     project_urls={
         "Bug Reports": "https://github.com/lbowenwest/gauze/issues",
