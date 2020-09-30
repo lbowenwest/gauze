@@ -6,11 +6,11 @@ from typing import (
     Generator,
     Generic,
     Iterator,
+    List,
     Type,
     TypeVar,
     Union,
     overload,
-    List,
 )
 
 from .matchers.base import Matcher

@@ -7,6 +7,7 @@ from gauze.matchers import (
     any_of,
     anything,
     contains,
+    ends_with,
     equal_to,
     greater_than,
     greater_than_or_equal_to,
@@ -14,7 +15,6 @@ from gauze.matchers import (
     less_than_or_equal_to,
     not_,
     starts_with,
-    ends_with,
 )
 
 

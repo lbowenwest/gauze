@@ -1,7 +1,7 @@
 from typing import Mapping, TypeVar, Union, overload
 
 from .base import Matcher
-from .core import anything, all_of
+from .core import all_of, anything
 from .helpers import as_matcher
 
 V = TypeVar("V")

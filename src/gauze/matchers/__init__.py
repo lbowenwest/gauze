@@ -4,7 +4,7 @@ from .comparison import (
     less_than,
     less_than_or_equal_to,
 )
-from .core import anything, not_, all_of, any_of
+from .core import all_of, any_of, anything, not_
 from .equal import equal_to
 from .sequence import contains
 from .text import ends_with, matches, starts_with
