@@ -1,16 +1,11 @@
-from typing import Any, Callable, Union
+from typing import Generic, TypeVar
 
-from typing_extensions import Protocol, runtime_checkable
+T = TypeVar("T")
 
 
-@runtime_checkable
-class Matcher(Protocol):
-    def match(self, actual: Any) -> bool:
+class Matcher(Generic[T]):
+    def match(self, actual: T) -> bool:
         ...  # pragma: no cover
 
-    def __call__(self, actual: Any) -> bool:
+    def __call__(self, actual: T) -> bool:
         return self.match(actual)
-
-
-MatcherFunc = Callable[[Any], bool]
-Matchable = Union[Matcher, MatcherFunc]

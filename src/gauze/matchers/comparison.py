@@ -1,13 +1,13 @@
 import operator
-from typing import Any
+from typing import Any, Callable
 
 from .base import Matcher
 
 
-class ComparisonMatcher(Matcher):
-    def __init__(self, operator_func, value):
-        self.operator = operator_func
+class ComparisonMatcher(Matcher[Any]):
+    def __init__(self, value: Any, operator_func: Callable[[Any, Any], bool]):
         self.value = value
+        self.operator = operator_func
 
     def match(self, actual: Any) -> bool:
         try:
@@ -16,21 +16,17 @@ class ComparisonMatcher(Matcher):
             return False
 
 
-def greater_than(value: Any) -> ComparisonMatcher:
-    return ComparisonMatcher(operator.gt, value)
+def greater_than(value: Any) -> Matcher[Any]:
+    return ComparisonMatcher(value, operator.gt)
 
 
-def greater_than_or_equal_to(value: Any) -> ComparisonMatcher:
-    return ComparisonMatcher(operator.ge, value)
+def greater_than_or_equal_to(value: Any) -> Matcher[Any]:
+    return ComparisonMatcher(value, operator.ge)
 
 
-def less_than(value: Any) -> ComparisonMatcher:
-    return ComparisonMatcher(operator.lt, value)
+def less_than(value: Any) -> Matcher[Any]:
+    return ComparisonMatcher(value, operator.lt)
 
 
-def less_than_or_equal_to(value: Any) -> ComparisonMatcher:
-    return ComparisonMatcher(operator.le, value)
-
-
-def starts_with(value: str) -> ComparisonMatcher:
-    return ComparisonMatcher(str.startswith, value)
+def less_than_or_equal_to(value: Any) -> Matcher[Any]:
+    return ComparisonMatcher(value, operator.le)

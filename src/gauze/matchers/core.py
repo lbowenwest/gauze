@@ -1,59 +1,51 @@
-from typing import Any
+from typing import Any, TypeVar, Union
 
-from .base import Matchable, Matcher
+from .base import Matcher
+from .helpers import as_matcher
+
+T = TypeVar("T")
 
 
-class EqualMatcher(Matcher):
-    def __init__(self, value):
-        self.value = value
-
+class AnythingMatcher(Matcher[Any]):
     def match(self, actual: Any) -> bool:
-        return actual == self.value
-
-
-class AnythingMatcher(Matcher):
-    def __call__(self, actual: Any) -> bool:
         return True
 
 
-class AnyOfMatcher(Matcher):
-    def __init__(self, *matchers: Matchable) -> None:
-        self.matchers = matchers
-
-    def match(self, actual: Any) -> bool:
-        return any(matcher(actual) for matcher in self.matchers)
-
-
-class AllOfMatcher(Matcher):
-    def __init__(self, *matchers: Matchable) -> None:
-        self.matchers = matchers
-
-    def match(self, actual: Any) -> bool:
-        return all(matcher(actual) for matcher in self.matchers)
-
-
-class NotMatcher(Matcher):
-    def __init__(self, matcher: Matchable) -> None:
+class NotMatcher(Matcher[T]):
+    def __init__(self, matcher: Matcher[T]) -> None:
         self.matcher = matcher
 
-    def match(self, actual: Any) -> bool:
+    def match(self, actual: T) -> bool:
         return not self.matcher(actual)
 
 
-anything = AnythingMatcher()
+class AnyOfMatcher(Matcher[T]):
+    def __init__(self, *matchers: Matcher[T]) -> None:
+        self.matchers = matchers
+
+    def match(self, actual: T) -> bool:
+        return any(matcher(actual) for matcher in self.matchers)
 
 
-def equal_to(value: Any) -> EqualMatcher:
-    return EqualMatcher(value)
+class AllOfMatcher(Matcher[T]):
+    def __init__(self, *matchers: Matcher[T]) -> None:
+        self.matchers = matchers
+
+    def match(self, actual: T) -> bool:
+        return all(matcher(actual) for matcher in self.matchers)
 
 
-def any_of(*matchers: Matchable) -> AnyOfMatcher:
-    return AnyOfMatcher(*matchers)
+def anything() -> Matcher[Any]:
+    return AnythingMatcher()
 
 
-def all_of(*matchers: Matchable) -> AllOfMatcher:
-    return AllOfMatcher(*matchers)
+def not_(match: Union[Matcher[T], T]) -> Matcher[T]:
+    return NotMatcher(as_matcher(match))
 
 
-def not_(matcher: Matchable) -> NotMatcher:
-    return NotMatcher(matcher)
+def all_of(*items: Union[Matcher[T], T]) -> Matcher[T]:
+    return AllOfMatcher(*[as_matcher(item) for item in items])
+
+
+def any_of(*items: Union[Matcher[T], T]) -> Matcher[T]:
+    return AnyOfMatcher(*[as_matcher(item) for item in items])

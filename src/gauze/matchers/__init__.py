@@ -1,16 +1,15 @@
-from .base import Matcher
 from .comparison import (
     greater_than,
     greater_than_or_equal_to,
     less_than,
     less_than_or_equal_to,
-    starts_with,
 )
-from .core import all_of, any_of, anything, equal_to, not_
+from .core import anything, not_, all_of, any_of
+from .equal import equal_to
 from .sequence import contains
+from .text import ends_with, matches, starts_with
 
 __all__ = [
-    "Matcher",
     "all_of",
     "any_of",
     "anything",
@@ -21,5 +20,7 @@ __all__ = [
     "less_than",
     "less_than_or_equal_to",
     "starts_with",
+    "ends_with",
+    "matches",
     "contains",
 ]

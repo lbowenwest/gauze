@@ -1,8 +1,8 @@
+import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
 from gauze.matchers import (
-    Matcher,
     all_of,
     any_of,
     anything,
@@ -14,27 +14,13 @@ from gauze.matchers import (
     less_than_or_equal_to,
     not_,
     starts_with,
+    ends_with,
 )
-
-
-def test_calling_matcher():
-    class TestMatcher(Matcher):
-        def __init__(self):
-            self.value = False
-
-        def match(self, actual) -> bool:
-            self.value = True
-            return self.value
-
-    matcher = TestMatcher()
-    assert not matcher.value
-    matcher(1)
-    assert matcher.value
 
 
 @given(st.lists(st.integers()))
 def test_anything_matcher(input_list):
-    filtered_list = list(filter(anything, input_list))
+    filtered_list = list(filter(anything(), input_list))
     assert len(input_list) == len(filtered_list)
 
 
@@ -90,6 +76,24 @@ def test_all_of_matcher(input_list):
 def test_starts_with_matcher(input_list):
     filtered_list = filter(starts_with("a"), input_list)
     assert all(a.startswith("a") for a in filtered_list)
+
+
+def test_starts_with_raises_when_strict():
+    with pytest.raises(AttributeError):
+        starts_with("a", strict=True).match(1)  # type: ignore
+    assert not starts_with("a", strict=False).match(1)  # type: ignore
+
+
+@given(st.lists(st.text()))
+def test_ends_with_matcher(input_list):
+    filtered_list = filter(ends_with("a"), input_list)
+    assert all(a.endswith("a") for a in filtered_list)
+
+
+def test_ends_with_raises_when_strict():
+    with pytest.raises(AttributeError):
+        ends_with("a", strict=True).match(1)  # type: ignore
+    assert not ends_with("a", strict=False).match(1)  # type: ignore
 
 
 @given(st.lists(st.lists(st.characters(), max_size=10)))
