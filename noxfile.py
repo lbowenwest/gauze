@@ -1,10 +1,11 @@
 import nox
+import nox_poetry.patch
 from nox.sessions import Session
 
-python = ["3.6", "3.7", "3.8"]
-locations = "src", "tests", "noxfile.py", "setup.py"
+python = ["3.6", "3.7", "3.8", "3.9"]
+locations = "src", "tests"
 
-nox.options.sessions = ["tests", "lint"]
+nox.options.sessions = ["tests", "lint", "mypy"]
 
 
 @nox.session(python="3.8")
@@ -29,7 +30,6 @@ def lint(session: Session) -> None:
     args = session.posargs or locations
     session.install(
         "flake8",
-        "flake8-annotations",
         "flake8-black",
         "flake8-bugbear",
         "flake8-isort",
@@ -41,13 +41,16 @@ def lint(session: Session) -> None:
 def mypy(session: Session) -> None:
     """Run static type analysis with mypy"""
     args = session.posargs or locations
-    session.install("-r", "requirements.txt")
+    session.install("-e", ".[dev,test]")
     session.install("mypy")
     session.run("mypy", *args)
 
 
 @nox.session(python=python)
 def tests(session: Session) -> None:
-    session.install("-e", ".", "pytest")
+    """Run the tests"""
+    # session.install("-e", ".[test]")
+    session.install(".")
+    session.install("pytest", "hypothesis")
     tests = session.posargs or ["tests"]
     session.run("pytest", *tests)
