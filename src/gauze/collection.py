@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import partial
 from operator import attrgetter
 from typing import (
     Any,
@@ -15,6 +16,7 @@ from typing import (
     Tuple,
     Optional,
     Sequence,
+    Callable,
 )
 
 from pydantic import ValidationError
@@ -24,6 +26,20 @@ from .matchers.base import Matcher
 from .matchers.object import has_properties
 
 T = TypeVar("T")
+
+
+def get_value(instance: object, name: str) -> Any:
+    """
+    Function that gets an attribute for an object
+
+    Has various fallback options to get the value
+    """
+    if hasattr(instance, name):
+        return getattr(instance, name)
+    elif hasattr(instance, "get") and callable(instance.get):
+        return instance.get(name)
+
+    return None
 
 
 class DataObject(object):
@@ -118,12 +134,6 @@ class Collection(Generic[T]):
             raise ValidationError(errors, cls)
         return v
 
-        #
-        # elif isinstance(v, (list, tuple)):
-        #     return cls(*v)
-        # else:
-        #     raise TypeError(f"cannot instantiate Collection from {type(v)}")
-
     @classmethod
     def __get_validators__(cls: Type[Collection[T]]) -> Generator[Any, None, None]:
         yield cls.__validate__
@@ -146,7 +156,7 @@ class Collection(Generic[T]):
         elif isinstance(item, slice):
             return Collection(self.objects[item])
         elif isinstance(item, str):
-            return Collection(map(attrgetter(item), self.objects))
+            return Collection(map(partial(get_value, name=item), self.objects))
         else:
             return Collection(
                 DataObject(**kv)
@@ -170,7 +180,7 @@ class Collection(Generic[T]):
         return self.objects.pop(idx)
 
     @overload
-    def where(self, matcher: Matcher) -> Collection[T]:
+    def where(self, matcher: Union[Matcher, Callable]) -> Collection[T]:
         ...
 
     @overload
