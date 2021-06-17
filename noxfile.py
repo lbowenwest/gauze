@@ -1,7 +1,8 @@
 import nox
+import nox_poetry.patch
 from nox.sessions import Session
 
-python = ["3.6", "3.7", "3.8"]
+python = ["3.6", "3.7", "3.8", "3.9"]
 locations = "src", "tests"
 
 nox.options.sessions = ["tests", "lint", "mypy"]
@@ -48,6 +49,8 @@ def mypy(session: Session) -> None:
 @nox.session(python=python)
 def tests(session: Session) -> None:
     """Run the tests"""
-    session.install("-e", ".[test]")
+    # session.install("-e", ".[test]")
+    session.install(".")
+    session.install("pytest", "hypothesis")
     tests = session.posargs or ["tests"]
     session.run("pytest", *tests)

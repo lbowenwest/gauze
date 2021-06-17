@@ -118,4 +118,4 @@ def test_composite_matchers(input_list):
         elif isinstance(element, int):
             assert 0 < element < 10
         else:
-            assert False, "unexpected item in list"
+            raise AssertionError("unexpected item in list")

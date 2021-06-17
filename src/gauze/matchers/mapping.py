@@ -12,8 +12,8 @@ class HasEntriesMatcher(Matcher[Mapping[K, V]]):
         self.value_matchers = sorted(value_matchers.items())
 
     def match(self, actual: Mapping[K, V]) -> bool:
-        for key, value_matcher in self.value_matchers:
-            pass
+        # for key, value_matcher in self.value_matchers:
+        #     pass
         return True
 
 

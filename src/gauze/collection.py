@@ -11,7 +11,14 @@ from typing import (
     TypeVar,
     Union,
     overload,
+    Iterable,
+    Tuple,
+    Optional,
+    Sequence,
 )
+
+from pydantic import ValidationError
+from pydantic.fields import ModelField
 
 from .matchers.base import Matcher
 from .matchers.object import has_properties
@@ -67,13 +74,14 @@ class DataObject(object):
 
 
 class Collection(Generic[T]):
-    def __init__(self, *values: T) -> None:
+    def __init__(self, seq: Iterable[T] = ()) -> None:
         """
-        Create a new collection from values
+        Create a new collection from a sequence
 
-        :param values:
+        :param seq:
         """
-        self.objects: List[T] = list(values)
+        self.objects: List[T] = []
+        self.objects.extend(seq)
 
     def __repr__(self):
         return f"<Collection: {repr(self.objects)}>"
@@ -84,20 +92,37 @@ class Collection(Generic[T]):
     def __len__(self) -> int:
         return len(self.objects)
 
-    def __contains__(self, item: T) -> bool:
+    def __contains__(self, item: object) -> bool:
         return item in self.objects
 
     def __bool__(self) -> bool:
         return bool(self.objects)
 
     @classmethod
-    def __validate__(cls: Type[Collection[T]], v: Any) -> Collection[T]:
-        if isinstance(v, cls):
+    def __validate__(
+        cls: Type[Collection[T]], v: Any, field: ModelField
+    ) -> Collection[T]:
+        v = v if isinstance(v, cls) else cls(v)
+
+        if not field.sub_fields:
             return v
-        elif isinstance(v, (list, tuple)):
-            return cls(*v)
-        else:
-            raise TypeError(f"cannot instantiate Collection from {type(v)}")
+
+        sub_field = field.sub_fields[0]
+        errors = []
+        for i, value in enumerate(v):
+            _, error = sub_field.validate(value, {}, loc=(i,))
+            if error:
+                errors.append(error)
+
+        if errors:
+            raise ValidationError(errors, cls)
+        return v
+
+        #
+        # elif isinstance(v, (list, tuple)):
+        #     return cls(*v)
+        # else:
+        #     raise TypeError(f"cannot instantiate Collection from {type(v)}")
 
     @classmethod
     def __get_validators__(cls: Type[Collection[T]]) -> Generator[Any, None, None]:
@@ -119,18 +144,16 @@ class Collection(Generic[T]):
         if isinstance(item, int):
             return self.objects[item]
         elif isinstance(item, slice):
-            return Collection(*self.objects[item])
+            return Collection(self.objects[item])
         elif isinstance(item, str):
-            return Collection(*map(attrgetter(item), self.objects))
+            return Collection(map(attrgetter(item), self.objects))
         else:
             return Collection(
-                *[
-                    DataObject(**kv)
-                    for kv in map(
-                        lambda d: dict(zip(item, attrgetter(*item)(d))),
-                        self.objects,
-                    )
-                ]
+                DataObject(**kv)
+                for kv in map(
+                    lambda d: dict(zip(item, attrgetter(*item)(d))),
+                    self.objects,
+                )
             )
 
     def __delitem__(self, item: Union[int, slice]) -> None:
@@ -157,10 +180,10 @@ class Collection(Generic[T]):
     def where(self, matcher=None, /, **kwargs):
         if matcher is None:
             matcher = has_properties(kwargs)
-        return Collection(*filter(matcher, self.objects))
+        return Collection(filter(matcher, self.objects))
 
     def copy(self) -> Collection[T]:
-        return Collection(*list(self.objects))
+        return Collection(list(self.objects))
 
     def sort(self, *keys, reverse=False):
         raise NotImplementedError("not implemented")
